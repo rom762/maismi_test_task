@@ -43,10 +43,19 @@ class GibddSpider(scrapy.Spider):
         )
 
     def parse_pages(self, response, **kwargs):
-        pass
+        pages_list = response.css('ul.paginator').css('li').getall()
+        last_page = int(remove_tags(pages_list[-1]))
+        print(f'last page: {last_page}')
+        last_page = 3
+        for page in range(1, 1 + last_page, 1):
+            url = f'https://xn--90adear.xn--p1ai/news/region?perPage=20&page={page}&region=65'
+            yield scrapy.Request(url, headers={'x-requested-with': 'xmlhttprequest'}, callback=self.parse)
 
     def parse(self, response):
-        pass
+        json_response = json.loads(response.text)
+        data = json_response['data']
+        for item in data:
+            yield item
 
 
 def main():
