@@ -1,4 +1,3 @@
-from pprint import pprint
 import requests
 import pandas as pd
 
@@ -28,7 +27,6 @@ def main():
 
     while True:
         url = f'https://xn--90adear.xn--p1ai/news/region?perPage=20&page={page}&region=65'
-
         response = get_requests(url)
         if response:
             json_data = response.json()
@@ -36,7 +34,7 @@ def main():
 
             # convert parsed data from current page to pandas data-frame and put them to the final data-frame
             df = pd.DataFrame.from_records(items)
-            final = pd.concat([final, df])
+            final = pd.concat([final, df], ignore_index=True)
 
             page = json_data['paginator']['page'] + 1
             # each 10 page make back-up parsed data to the file
@@ -49,6 +47,8 @@ def main():
 
             if totals // per_page + 1 < page:
                 break
+
+    save_part(final, page-1)
 
 
 if __name__ == '__main__':
